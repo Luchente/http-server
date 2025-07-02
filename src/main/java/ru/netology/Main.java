@@ -20,11 +20,26 @@ public class Main {
             response.write(out);
         });
 
-        // Новый POST-хендлер с x-www-form-urlencoded
+        // POST-хендлер с x-www-form-urlencoded
         server.addHandler("POST", "/submit", (request, out) -> {
             String name = request.getPostParam("name");
             List<String> ranks = request.getPostParams("rank");
             String result = "Name: " + name + ", Ranks: " + String.join(", ", ranks);
+            var response = new Response(200, "text/plain", result);
+            response.write(out);
+        });
+
+        // Новый multipart-хендлер
+        server.addHandler("POST", "/upload", (request, out) -> {
+            Part namePart = request.getPart("name");
+            Part filePart = request.getPart("file");
+
+            String name = (namePart != null) ? namePart.getContentAsString() : "(no name)";
+            String fileInfo = (filePart != null)
+                    ? "File: " + filePart.getFileName() + ", Size: " + filePart.getContent().length
+                    : "(no file)";
+
+            String result = "Received from: " + name + "\n" + fileInfo;
             var response = new Response(200, "text/plain", result);
             response.write(out);
         });
